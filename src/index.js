@@ -12,9 +12,16 @@ export class PreviewContainer extends DurableObject {
     }
 
     const incoming = new URL(request.url);
+    const publicHostname = incoming.hostname;
+    const image = container.images.base;
+    const previousImage = await this.ctx.storage.get("preview-image");
+    if (previousImage !== image) {
+      if (container.running) await container.destroy();
+      await this.ctx.storage.put("preview-image", image);
+    }
     if (!container.running) {
       container.start({
-        image: container.images.base,
+        image,
         instance: "basic",
         enableInternet: true,
         env: {
@@ -23,7 +30,7 @@ export class PreviewContainer extends DurableObject {
           SERVICE_TOKEN_KEY: this.env.SERVICE_TOKEN_KEY,
           PREVIEW_ADMIN_USERNAME: "previewadmin",
           PREVIEW_ADMIN_PASSWORD: this.env.PREVIEW_ADMIN_PASSWORD,
-          DJANGO_ALLOWED_HOSTS: `container,${incoming.hostname}`,
+          DJANGO_ALLOWED_HOSTS: `container,${publicHostname}`,
           DJANGO_CSRF_TRUSTED_ORIGINS: incoming.origin,
           CELERY_BROKER_URL: "redis://127.0.0.1:6379/0",
           CF_PREVIEW: "1",
@@ -52,6 +59,7 @@ export class PreviewContainer extends DurableObject {
     const forwarded = new Request(incoming, request);
     forwarded.headers.delete("host");
     forwarded.headers.set("x-forwarded-proto", "https");
+    forwarded.headers.set("x-forwarded-host", publicHostname);
     return port.fetch(forwarded);
   }
 }

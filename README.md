@@ -90,6 +90,8 @@ summarize_daily_health(timezone.localdate().isoformat())
 
 仓库包含 `wrangler.jsonc` 和 `Dockerfile.preview`，可以把 Django、Redis、Celery worker 和 beat 放进一个 Cloudflare Container，供短时间在线演示。部署前需要已开通 Containers 的 Cloudflare 账户、Docker 和 Node.js：
 
+当前演示地址：<https://django-health-monitor-preview.florianuqub.workers.dev/api/>。管理员密码单独保存在部署者本机，不在公开仓库中。
+
 ```powershell
 npm install
 npx wrangler deploy

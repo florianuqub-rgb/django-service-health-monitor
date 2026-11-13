@@ -15,7 +15,9 @@ COPY manage.py .
 COPY config ./config
 COPY monitor ./monitor
 COPY deploy/cloudflare/run_preview.sh ./run_preview.sh
-RUN sed -i 's/\r$//' ./run_preview.sh && chmod +x ./run_preview.sh
+RUN python manage.py collectstatic --noinput \
+    && sed -i 's/\r$//' ./run_preview.sh \
+    && chmod +x ./run_preview.sh
 
 EXPOSE 8000
 CMD ["./run_preview.sh"]
