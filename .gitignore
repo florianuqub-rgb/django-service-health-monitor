@@ -7,3 +7,5 @@ db.sqlite3
 .vscode/
 celerybeat-schedule*
 *.log
+node_modules/
+.wrangler/

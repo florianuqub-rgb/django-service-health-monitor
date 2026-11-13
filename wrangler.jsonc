@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "django-health-monitor-preview",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "containers": [
+    {
+      "class_name": "PreviewContainer",
+      "scheduling_policy": "durable_object",
+      "images": { "base": { "dockerfile": "./Dockerfile.preview" } }
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "PREVIEW", "class_name": "PreviewContainer" }]
+  },
+  "exports": {
+    "PreviewContainer": { "type": "durable-object", "storage": "sqlite" }
+  }
+}

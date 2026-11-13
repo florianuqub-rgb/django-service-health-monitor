@@ -85,3 +85,16 @@ summarize_daily_health(timezone.localdate().isoformat())
 ## 题目边界
 
 巡检请求会把本系统保存的 Token 解密后放入 `Authorization: Bearer ...` 请求头。每 8 小时的轮换只更新本系统的加密记录。题目没有提供目标服务的 Token 更新协议，因此此实现不声称能同步修改外部服务的鉴权配置；若目标服务校验该 Token，需要补充同步接口。系统只对实际产生的巡检记录计算健康率，题目未要求自动周期巡检。
+
+## Cloudflare 临时预览
+
+仓库包含 `wrangler.jsonc` 和 `Dockerfile.preview`，可以把 Django、Redis、Celery worker 和 beat 放进一个 Cloudflare Container，供短时间在线演示。部署前需要已开通 Containers 的 Cloudflare 账户、Docker 和 Node.js：
+
+```powershell
+npm install
+npx wrangler deploy
+```
+
+部署后，通过 `npx wrangler secret bulk <本地密钥文件>` 配置 `DJANGO_SECRET_KEY`、`SERVICE_TOKEN_KEY`、`PREVIEW_ADMIN_PASSWORD` 三个密钥。密钥文件只保存在本机，不要提交。预览账户名为 `previewadmin`。打开部署所得的 `/api/` 地址，或在 `/api-auth/login/` 登录后试用接口。
+
+这是临时预览环境：容器空闲后可能休眠或重启，容器里的 SQLite 数据会丢失；休眠期间 Celery beat 也不会准时执行定时任务。要长期运行，需改用持久数据库与持续可用的任务调度环境。Cloudflare Containers 可能产生费用，部署前应查看账户套餐。

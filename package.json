@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "scripts": { "deploy:preview": "wrangler deploy" },
+  "devDependencies": { "wrangler": "^4.98.0" }
+}
