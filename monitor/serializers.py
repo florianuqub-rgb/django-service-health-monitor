@@ -1,6 +1,7 @@
 from urllib.parse import urlsplit
 
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from .models import CheckRecord, DailyStat, Environment, Service, Team
 
@@ -19,12 +20,13 @@ class TeamSerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     token = serializers.CharField(write_only=True, required=False, allow_blank=False)
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
         fields = [
             "id", "name", "base_url", "health_path", "environment", "team",
-            "token", "token_rotated_at", "created_at",
+            "token", "token_rotated_at", "created_at", "links",
         ]
         read_only_fields = ["id", "token_rotated_at", "created_at"]
 
@@ -35,6 +37,15 @@ class ServiceSerializer(serializers.ModelSerializer):
                 or parsed.path not in ("", "/")):
             raise serializers.ValidationError("Use an http(s) origin without a path or credentials.")
         return value.rstrip("/")
+
+    def get_links(self, obj):
+        request = self.context.get("request")
+        return {
+            "detail": reverse("service-detail", args=[obj.pk], request=request),
+            "check": reverse("service-check", args=[obj.pk], request=request),
+            "checks": f"{reverse('checks-list', request=request)}?service={obj.pk}",
+            "stats": f"{reverse('stats-list', request=request)}?service={obj.pk}",
+        }
 
     def validate_health_path(self, value):
         if not value.startswith("/") or value.startswith("//") or "?" in value or "#" in value:

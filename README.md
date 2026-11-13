@@ -54,7 +54,7 @@ python -m celery -A config beat -l INFO
 
 ## API
 
-先用超级用户登录 `http://127.0.0.1:8000/api-auth/login/?next=/`。登录后打开首页 `http://127.0.0.1:8000/`，可直接选择服务、点击巡检按钮，并跳转到对应记录和统计。各数据接口仍可通过 DRF 页面操作，且仅对管理员开放。
+先用超级用户登录 `http://127.0.0.1:8000/api-auth/login/?next=/api/`，然后打开 Django REST Framework 默认的 `/api/` 页面。点 `services` 可查看服务列表；每条服务的 `links` 字段提供可点击的详情、巡检、记录和统计地址。进入巡检地址后，点击页面下方的 `POST` 按钮执行检查。数据接口仅对管理员开放。
 
 | 路径 | 功能 |
 | --- | --- |
@@ -66,7 +66,7 @@ python -m celery -A config beat -l INFO
 | `/api/stats/?environment={id}&team={id}` | 查看每日统计 |
 | `/healthz/` | 本地演示用的被巡检端点 |
 
-首页的 4 条演示服务使用 `/demo-target/ok/` 和 `/demo-target/unavailable/` 作为模拟目标，分别返回 200 和 503；它们不会校验 Token，也不代表真实内网系统。预置的昨日记录和健康率是虚构样例；点击“立即巡检”后新增的记录来自真实执行的 HTTP 请求。
+4 条演示服务使用 `/demo-target/ok/` 和 `/demo-target/unavailable/` 作为模拟目标，分别返回 200 和 503；它们不会校验 Token，也不代表真实内网系统。预置的昨日记录和健康率是虚构样例；点击巡检页面的 `POST` 后新增的记录来自真实执行的 HTTP 请求。
 
 可以创建一个服务：`base_url` 为 `http://127.0.0.1:8000`，`health_path` 为 `/healthz/`，关联已创建的环境和团队。调用它的 `check` 接口后，查看 `/api/checks/`。每个响应都有 `X-Request-Duration-Ms` 响应头，服务端日志也记录接口耗时。
 
@@ -94,7 +94,7 @@ summarize_daily_health(timezone.localdate().isoformat())
 
 仓库包含 `wrangler.jsonc` 和 `Dockerfile.preview`，可以把 Django、Redis、Celery worker 和 beat 放进一个 Cloudflare Container，供短时间在线演示。部署前需要已开通 Containers 的 Cloudflare 账户、Docker 和 Node.js：
 
-当前演示首页：<https://django-health-monitor-preview.florianuqub.workers.dev/>。预览容器每次启动会自动补齐演示数据。管理员密码单独保存在部署者本机，不在公开仓库中。
+当前预览地址：<https://django-health-monitor-preview.florianuqub.workers.dev/>，根路径会跳转到默认的 `/api/` 页面。预览容器每次启动会自动补齐演示数据。管理员密码单独保存在部署者本机，不在公开仓库中。
 
 ```powershell
 npm install

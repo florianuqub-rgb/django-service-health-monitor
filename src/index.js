@@ -66,6 +66,9 @@ export class PreviewContainer extends DurableObject {
 
 export default {
   async fetch(request, env) {
+    if (new URL(request.url).pathname === "/") {
+      return Response.redirect(new URL("/api/", request.url), 302);
+    }
     return env.PREVIEW.getByName("singleton").fetch(request);
   },
 };

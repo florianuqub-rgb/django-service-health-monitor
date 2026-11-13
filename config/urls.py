@@ -17,11 +17,9 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from monitor.views import dashboard, dashboard_check, demo_target_ok, demo_target_unavailable, healthz
+from monitor.views import demo_target_ok, demo_target_unavailable, healthz
 
 urlpatterns = [
-    path("", dashboard, name="dashboard"),
-    path("dashboard/check/<int:service_id>/", dashboard_check, name="dashboard-check"),
     path("demo-target/ok/", demo_target_ok, name="demo-target-ok"),
     path("demo-target/unavailable/", demo_target_unavailable, name="demo-target-unavailable"),
     path("admin/", admin.site.urls),
