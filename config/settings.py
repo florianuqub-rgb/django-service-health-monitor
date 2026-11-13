@@ -39,7 +39,7 @@ if os.getenv("CF_PREVIEW") == "1":
     USE_X_FORWARDED_HOST = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    LOGIN_REDIRECT_URL = "/api/"
+    LOGIN_REDIRECT_URL = "/"
 
 
 # Application definition

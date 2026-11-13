@@ -30,7 +30,7 @@ export class PreviewContainer extends DurableObject {
           SERVICE_TOKEN_KEY: this.env.SERVICE_TOKEN_KEY,
           PREVIEW_ADMIN_USERNAME: "previewadmin",
           PREVIEW_ADMIN_PASSWORD: this.env.PREVIEW_ADMIN_PASSWORD,
-          DJANGO_ALLOWED_HOSTS: `container,${publicHostname}`,
+          DJANGO_ALLOWED_HOSTS: `127.0.0.1,localhost,container,${publicHostname}`,
           DJANGO_CSRF_TRUSTED_ORIGINS: incoming.origin,
           CELERY_BROKER_URL: "redis://127.0.0.1:6379/0",
           CF_PREVIEW: "1",
@@ -66,9 +66,6 @@ export class PreviewContainer extends DurableObject {
 
 export default {
   async fetch(request, env) {
-    if (new URL(request.url).pathname === "/") {
-      return Response.redirect(new URL("/api/", request.url), 302);
-    }
     return env.PREVIEW.getByName("singleton").fetch(request);
   },
 };

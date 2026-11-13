@@ -24,6 +24,8 @@ user.set_password(os.environ["PREVIEW_ADMIN_PASSWORD"])
 user.save()
 PY
 
+python manage.py seed_demo
+
 python -m celery -A config worker --pool=solo -l WARNING &
 python -m celery -A config beat -l WARNING &
-exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 1 --timeout 60 --access-logfile -
+exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 4 --timeout 60 --access-logfile -
