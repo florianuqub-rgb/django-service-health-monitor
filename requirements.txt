@@ -1,0 +1,5 @@
+Django==5.2.19
+djangorestframework==3.18.3
+celery[redis]==5.7.0
+cryptography==46.0.7
+python-dotenv==1.2.2
